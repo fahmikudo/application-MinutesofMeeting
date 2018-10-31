@@ -1,2 +1,2 @@
-# aplikasi-meeting
-Aplikasi Minutes of Meeting
+# Minutes of Meeting
+Application Minutes of Meeting
