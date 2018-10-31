@@ -105,7 +105,7 @@ public class ProjectController {
     public ResponseEntity<?> deleteNotulen(@PathVariable("id") String id){
         Optional<Project> p = projectDao.findById(id);
         if (p == null){
-            return new ResponseEntity("Notulen not found", HttpStatus.NOT_FOUND);
+            return new ResponseEntity("User not found", HttpStatus.NOT_FOUND);
         }
         projectDao.delete(p.get());
         return ResponseEntity.ok().build();

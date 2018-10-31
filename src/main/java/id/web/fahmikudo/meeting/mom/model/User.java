@@ -8,21 +8,33 @@ import java.io.Serializable;
 import java.util.List;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @Entity
-@Table(name = "notulen")
+@Table(name = "user")
 @Data
-public class Notulen implements Serializable {
+public class User implements Serializable {
 
 	@Id
 	@GeneratedValue(generator = "uuid", strategy = GenerationType.AUTO)
 	@GenericGenerator(name = "uuid", strategy = "uuid2")
-	@Column(name = "id_notulen")
+	@Column(name = "id_user")
 	private String id;
 
 	@Column(nullable = false)
-	private String nama;
+	@NotEmpty @NotNull
+	@Size(min = 2, max = 50)
+	private String namaLengkap;
+
+	@NotEmpty @NotNull
+	@Size(min = 2, max = 20)
+	private String username;
+
+	@NotEmpty @NotNull
+	@Size(min = 6, max = 20)
+	private String password;
 
 	@Column(nullable = false)
 	@Size(min = 8, max = 14)
@@ -31,11 +43,11 @@ public class Notulen implements Serializable {
 	@Column(nullable = false)
 	private String jabatan;
 
-	@OneToMany(mappedBy = "notulen", orphanRemoval = true, fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "user", orphanRemoval = true, fetch = FetchType.LAZY)
 	@JsonIgnore
 	private List<Meeting> meeting;
 
-	public Notulen() {
+	public User() {
 	}
 
 }

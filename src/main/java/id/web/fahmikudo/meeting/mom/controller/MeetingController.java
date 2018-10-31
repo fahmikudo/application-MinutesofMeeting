@@ -2,10 +2,9 @@ package id.web.fahmikudo.meeting.mom.controller;
 
 import id.web.fahmikudo.meeting.mom.dao.MeetingDao;
 import id.web.fahmikudo.meeting.mom.dao.NotulenDao;
-import id.web.fahmikudo.meeting.mom.dao.PokokBahasanDao;
 import id.web.fahmikudo.meeting.mom.dao.ProjectDao;
 import id.web.fahmikudo.meeting.mom.model.Meeting;
-import id.web.fahmikudo.meeting.mom.model.Notulen;
+import id.web.fahmikudo.meeting.mom.model.User;
 import id.web.fahmikudo.meeting.mom.model.Project;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -54,7 +53,7 @@ public class MeetingController {
     public ResponseEntity<?> addMeeting(@Valid @RequestBody Meeting meeting){
 
         Optional<Project> p = projectDao.findById(meeting.getProject().getId());
-        Optional<Notulen> n = notulenDao.findById(meeting.getNotulen().getId());
+        Optional<User> n = notulenDao.findById(meeting.getUser().getId());
 
         boolean valid = false;
         if (p.isPresent() && n.isPresent()){
@@ -62,7 +61,7 @@ public class MeetingController {
         }
         if (valid){
             meeting.setProject(p.get());
-            meeting.setNotulen(n.get());
+            meeting.setUser(n.get());
             meetingDao.save(meeting);
             return new ResponseEntity<>(meeting, HttpStatus.CREATED);
         } else {
@@ -83,7 +82,7 @@ public class MeetingController {
             savedMeeting.setLokasi(meeting.getLokasi());
             savedMeeting.setTanggalWaktu(meeting.getTanggalWaktu());
             savedMeeting.setProject(meeting.getProject());
-            savedMeeting.setNotulen(meeting.getNotulen());
+            savedMeeting.setUser(meeting.getUser());
 
             Meeting update = meetingDao.save(savedMeeting);
             return new ResponseEntity<>(update, HttpStatus.OK);
