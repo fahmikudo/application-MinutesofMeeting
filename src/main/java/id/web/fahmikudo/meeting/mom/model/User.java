@@ -1,6 +1,7 @@
 package id.web.fahmikudo.meeting.mom.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import id.web.fahmikudo.meeting.mom.security.model.Role;
 import lombok.Data;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -48,6 +49,11 @@ public class User implements Serializable {
     @OneToMany(mappedBy = "users", orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonIgnore
     private List<Meeting> meeting;
+
+    @Enumerated(EnumType.STRING)
+    private Role roles;
+
+    private Boolean enabled;
 
     public User() {
     }
