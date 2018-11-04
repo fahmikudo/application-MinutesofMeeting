@@ -1,6 +1,6 @@
 package id.web.fahmikudo.meeting.mom.controller;
 
-import id.web.fahmikudo.meeting.mom.dao.UserDao;
+import id.web.fahmikudo.meeting.mom.repository.UserRepo;
 import id.web.fahmikudo.meeting.mom.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -28,21 +28,21 @@ public class UserController {
     private static final int MAX_PAGE_SIZE = 50;
 
     @Autowired
-    private UserDao userDao;
+    private UserRepo userRepo;
 
     @PostMapping(value = "/add", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> addUser(@Valid @RequestBody User user){
-        if (userDao.findByNamaLengkap(user.getNamaLengkap()).isPresent() && userDao.findByUsername(user.getUsername()).isPresent()){
+        if (userRepo.findByNamaLengkap(user.getNamaLengkap()).isPresent() && userRepo.findByUsername(user.getUsername()).isPresent()){
             return new ResponseEntity<>(user, HttpStatus.BAD_REQUEST);
         } else {
-            userDao.save(user);
+            userRepo.save(user);
             return new ResponseEntity<>(user, HttpStatus.CREATED);
         }
     }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getUser(@PathVariable("id") String id) {
-        return userDao.findById(id)
+        return userRepo.findById(id)
                 .map(user -> new ResponseEntity<>(user, HttpStatus.OK))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
@@ -56,7 +56,7 @@ public class UserController {
                 Sort.by("asc" .equals(order) ? Sort.Direction.ASC : Sort.Direction.DESC, sort)
         );
 
-        Page<User> notulenPage = userDao.findAll(pr);
+        Page<User> notulenPage = userRepo.findAll(pr);
 
         if (notulenPage.getContent().isEmpty()) {
             return new ResponseEntity(HttpStatus.NO_CONTENT);
@@ -88,7 +88,7 @@ public class UserController {
 
     @PutMapping(value = "/edit/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> editUser(@PathVariable("id") String id, @Valid @RequestBody User user) {
-        Optional<User> n = userDao.findById(id);
+        Optional<User> n = userRepo.findById(id);
         if (!n.isPresent()){
             return new ResponseEntity<>(user, HttpStatus.BAD_REQUEST);
         } else {
@@ -99,18 +99,18 @@ public class UserController {
             savedUser.setUsername(user.getUsername());
             savedUser.setPassword(user.getPassword());
 
-            User update = userDao.save(savedUser);
+            User update = userRepo.save(savedUser);
             return new ResponseEntity<>(update, HttpStatus.OK);
         }
     }
 
     @DeleteMapping(value = "/delete/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> deleteUser(@PathVariable("id") String id){
-        Optional<User> n = userDao.findById(id);
+        Optional<User> n = userRepo.findById(id);
         if (n == null){
             return new ResponseEntity("User not found", HttpStatus.NOT_FOUND);
         }
-        userDao.delete(n.get());
+        userRepo.delete(n.get());
         return ResponseEntity.ok().build();
     }
 

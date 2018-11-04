@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import id.web.fahmikudo.meeting.mom.dao.ProjectDao;
+import id.web.fahmikudo.meeting.mom.repository.ProjectRepo;
 import id.web.fahmikudo.meeting.mom.model.Project;
 
 @RunWith(SpringRunner.class)
@@ -14,7 +14,7 @@ import id.web.fahmikudo.meeting.mom.model.Project;
 public class ProjectTest {
 
     @Autowired
-    private ProjectDao pd;
+    private ProjectRepo pd;
 
     @Test
     public void testInsert(){

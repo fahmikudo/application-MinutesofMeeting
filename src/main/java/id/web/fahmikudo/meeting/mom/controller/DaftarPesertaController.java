@@ -1,7 +1,7 @@
 package id.web.fahmikudo.meeting.mom.controller;
 
-import id.web.fahmikudo.meeting.mom.dao.DaftarPesertaDao;
-import id.web.fahmikudo.meeting.mom.dao.MeetingDao;
+import id.web.fahmikudo.meeting.mom.repository.DaftarPesertaRepo;
+import id.web.fahmikudo.meeting.mom.repository.MeetingRepo;
 import id.web.fahmikudo.meeting.mom.model.DaftarPeserta;
 import id.web.fahmikudo.meeting.mom.model.Meeting;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,15 +30,15 @@ public class DaftarPesertaController {
     private static final int MAX_PAGE_SIZE = 50;
 
     @Autowired
-    private DaftarPesertaDao daftarPesertaDao;
+    private DaftarPesertaRepo daftarPesertaRepo;
 
     @Autowired
-    private MeetingDao meetingDao;
+    private MeetingRepo meetingRepo;
 
 
     @GetMapping(value = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getDaftarPeserta(@PathVariable String id){
-        return daftarPesertaDao.findById(id)
+        return daftarPesertaRepo.findById(id)
                 .map(peserta -> new ResponseEntity<>(peserta, HttpStatus.OK))
                 .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
@@ -46,14 +46,14 @@ public class DaftarPesertaController {
     @PostMapping(value = "/add", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> addDaftarPeserta(@Valid @RequestBody DaftarPeserta daftarPeserta){
 
-        Optional<Meeting> mt = meetingDao.findById(daftarPeserta.getMeeting().getId());
+        Optional<Meeting> mt = meetingRepo.findById(daftarPeserta.getMeeting().getId());
         boolean valid = false;
         if (mt.isPresent()){
             valid = true;
         }
         if (valid){
             daftarPeserta.setMeeting(mt.get());
-            daftarPesertaDao.save(daftarPeserta);
+            daftarPesertaRepo.save(daftarPeserta);
             return new ResponseEntity<>(daftarPeserta, HttpStatus.CREATED);
         } else {
             return new ResponseEntity<>(daftarPeserta, HttpStatus.BAD_REQUEST);
@@ -62,7 +62,7 @@ public class DaftarPesertaController {
 
     @PutMapping(value = "/edit/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> editDaftarPeserta(@PathVariable("id") String id, @Valid @RequestBody DaftarPeserta daftarPeserta){
-        Optional<DaftarPeserta> dp = daftarPesertaDao.findById(id);
+        Optional<DaftarPeserta> dp = daftarPesertaRepo.findById(id);
         if (!dp.isPresent()){
             return new ResponseEntity<>(daftarPeserta, HttpStatus.BAD_REQUEST);
         } else {
@@ -72,18 +72,18 @@ public class DaftarPesertaController {
             savedPeserta.setAbsen(daftarPeserta.getAbsen());
             savedPeserta.setMeeting(daftarPeserta.getMeeting());
 
-            DaftarPeserta update = daftarPesertaDao.save(savedPeserta);
+            DaftarPeserta update = daftarPesertaRepo.save(savedPeserta);
             return new ResponseEntity<>(update, HttpStatus.OK);
         }
     }
 
     @DeleteMapping(value = "delete/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> deleteDaftarPeserta(@PathVariable("id") String id){
-        Optional<DaftarPeserta> dp = daftarPesertaDao.findById(id);
+        Optional<DaftarPeserta> dp = daftarPesertaRepo.findById(id);
         if (dp == null){
             return new ResponseEntity<>("Daftar Peserta Not Found", HttpStatus.NOT_FOUND);
         }
-        daftarPesertaDao.delete(dp.get());
+        daftarPesertaRepo.delete(dp.get());
         return ResponseEntity.ok().build();
     }
 
@@ -97,7 +97,7 @@ public class DaftarPesertaController {
                 Sort.by("asc" .equals(order) ? Sort.Direction.ASC : Sort.Direction.DESC, sort)
         );
 
-        Page<DaftarPeserta> dpPage = daftarPesertaDao.findAll(pr);
+        Page<DaftarPeserta> dpPage = daftarPesertaRepo.findAll(pr);
 
         if (dpPage.getContent().isEmpty()) {
             return new ResponseEntity(HttpStatus.NO_CONTENT);

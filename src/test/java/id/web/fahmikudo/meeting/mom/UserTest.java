@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import id.web.fahmikudo.meeting.mom.dao.UserDao;
+import id.web.fahmikudo.meeting.mom.repository.UserRepo;
 import id.web.fahmikudo.meeting.mom.model.User;
 
 
@@ -16,7 +16,7 @@ import id.web.fahmikudo.meeting.mom.model.User;
 public class UserTest {
 
 	@Autowired
-	private UserDao nd;
+	private UserRepo nd;
 
 	@Test
 	public void testInsert(){

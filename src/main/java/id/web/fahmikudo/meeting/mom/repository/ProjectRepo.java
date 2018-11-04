@@ -1,10 +1,10 @@
-package id.web.fahmikudo.meeting.mom.dao;
+package id.web.fahmikudo.meeting.mom.repository;
 
 import id.web.fahmikudo.meeting.mom.model.Project;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
 import java.util.Optional;
 
-public interface ProjectDao extends PagingAndSortingRepository<Project, String>{
+public interface ProjectRepo extends PagingAndSortingRepository<Project, String>{
     Optional<Project> findByNamaProject(String nama);
 }

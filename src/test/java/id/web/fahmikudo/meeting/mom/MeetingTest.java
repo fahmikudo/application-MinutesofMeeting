@@ -1,6 +1,6 @@
 package id.web.fahmikudo.meeting.mom;
 
-import id.web.fahmikudo.meeting.mom.dao.MeetingDao;
+import id.web.fahmikudo.meeting.mom.repository.MeetingRepo;
 import id.web.fahmikudo.meeting.mom.model.Meeting;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,7 +15,7 @@ import java.util.Date;
 public class MeetingTest {
 
     @Autowired
-    private MeetingDao md;
+    private MeetingRepo md;
 
     @Test
     public void testInsert() {

@@ -1,7 +1,7 @@
 package id.web.fahmikudo.meeting.mom.controller;
 
-import id.web.fahmikudo.meeting.mom.dao.DetailPokokBahasanDao;
-import id.web.fahmikudo.meeting.mom.dao.PokokBahasanDao;
+import id.web.fahmikudo.meeting.mom.repository.DetailPokokBahasanRepo;
+import id.web.fahmikudo.meeting.mom.repository.PokokBahasanRepo;
 import id.web.fahmikudo.meeting.mom.model.DetailPokokBahasan;
 import id.web.fahmikudo.meeting.mom.model.PokokBahasan;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,21 +29,21 @@ public class DetailPokokBahasanController {
     private static final int MAX_PAGE_SIZE = 50;
 
     @Autowired
-    private DetailPokokBahasanDao detailPokokBahasanDao;
+    private DetailPokokBahasanRepo detailPokokBahasanRepo;
 
     @Autowired
-    private PokokBahasanDao pokokBahasanDao;
+    private PokokBahasanRepo pokokBahasanRepo;
 
     @PostMapping(value = "/add", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> addDetail(@Valid @RequestBody DetailPokokBahasan detailPokokBahasan){
-        Optional<PokokBahasan> pb = pokokBahasanDao.findById(detailPokokBahasan.getPokokBahasan().getId());
+        Optional<PokokBahasan> pb = pokokBahasanRepo.findById(detailPokokBahasan.getPokokBahasan().getId());
         boolean valid = false;
         if (pb.isPresent()){
             valid = true;
         }
         if (valid){
             detailPokokBahasan.setPokokBahasan(pb.get());
-            detailPokokBahasanDao.save(detailPokokBahasan);
+            detailPokokBahasanRepo.save(detailPokokBahasan);
             return new ResponseEntity<>(detailPokokBahasan, HttpStatus.CREATED);
         } else {
             return new ResponseEntity<>(detailPokokBahasan, HttpStatus.BAD_REQUEST);
@@ -53,7 +53,7 @@ public class DetailPokokBahasanController {
 
     @PutMapping(value = "/edit/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> editDetail(@PathVariable("id") String id, @Valid @RequestBody DetailPokokBahasan detailPokokBahasan){
-        Optional<DetailPokokBahasan> dpk = detailPokokBahasanDao.findById(id);
+        Optional<DetailPokokBahasan> dpk = detailPokokBahasanRepo.findById(id);
         if (!dpk.isPresent()){
             return new ResponseEntity<>(detailPokokBahasan, HttpStatus.NOT_FOUND);
         } else {
@@ -62,18 +62,18 @@ public class DetailPokokBahasanController {
             savedDetail.setDetailPokokBahasan(detailPokokBahasan.getDetailPokokBahasan());
             savedDetail.setNomor(detailPokokBahasan.getNomor());
 
-            DetailPokokBahasan update = detailPokokBahasanDao.save(savedDetail);
+            DetailPokokBahasan update = detailPokokBahasanRepo.save(savedDetail);
             return new ResponseEntity<>(update, HttpStatus.OK);
         }
     }
 
     @DeleteMapping(value = "/delete/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> deleteDetail(@PathVariable("id") String id){
-        Optional<DetailPokokBahasan> dpk = detailPokokBahasanDao.findById(id);
+        Optional<DetailPokokBahasan> dpk = detailPokokBahasanRepo.findById(id);
         if (dpk == null){
             return new ResponseEntity<>("Detail Pokok Bahasan Not Found", HttpStatus.NOT_FOUND);
         }
-        detailPokokBahasanDao.delete(dpk.get());
+        detailPokokBahasanRepo.delete(dpk.get());
         return ResponseEntity.ok().build();
     }
 
@@ -86,7 +86,7 @@ public class DetailPokokBahasanController {
                 Sort.by("asc" .equals(order) ? Sort.Direction.ASC : Sort.Direction.DESC, sort)
         );
 
-        Page<DetailPokokBahasan> detailPage = detailPokokBahasanDao.findAll(pr);
+        Page<DetailPokokBahasan> detailPage = detailPokokBahasanRepo.findAll(pr);
 
         if (detailPage.getContent().isEmpty()) {
             return new ResponseEntity(HttpStatus.NO_CONTENT);

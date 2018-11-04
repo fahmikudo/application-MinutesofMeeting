@@ -1,6 +1,6 @@
 package id.web.fahmikudo.meeting.mom.controller;
 
-import id.web.fahmikudo.meeting.mom.dao.ProjectDao;
+import id.web.fahmikudo.meeting.mom.repository.ProjectRepo;
 import id.web.fahmikudo.meeting.mom.model.Project;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -28,21 +28,21 @@ public class ProjectController {
     private final static int MAX_PAGE_SIZE = 50;
 
     @Autowired
-    private ProjectDao projectDao;
+    private ProjectRepo projectRepo;
 
     @PostMapping(value = "/add", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> addProject(@Valid @RequestBody Project project){
-        if (projectDao.findByNamaProject(project.getNamaProject()).isPresent() && projectDao.findById(project.getId()).isPresent()){
+        if (projectRepo.findByNamaProject(project.getNamaProject()).isPresent() && projectRepo.findById(project.getId()).isPresent()){
             return new ResponseEntity<>(project, HttpStatus.BAD_REQUEST);
         } else {
-            projectDao.save(project);
+            projectRepo.save(project);
             return new ResponseEntity<>(project, HttpStatus.CREATED);
         }
     }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getProject(@PathVariable("id") String id) {
-        return projectDao.findById(id)
+        return projectRepo.findById(id)
                 .map(project -> new ResponseEntity<>(project, HttpStatus.OK))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
@@ -56,7 +56,7 @@ public class ProjectController {
                 Sort.by("asc" .equals(order) ? Sort.Direction.ASC : Sort.Direction.DESC, sort)
         );
 
-        Page<Project> projectPage = projectDao.findAll(pr);
+        Page<Project> projectPage = projectRepo.findAll(pr);
 
         if (projectPage.getContent().isEmpty()) {
             return new ResponseEntity(HttpStatus.NO_CONTENT);
@@ -89,25 +89,25 @@ public class ProjectController {
 
     @PutMapping(value = "/edit/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> editNotulen(@PathVariable("id") String id, @Valid @RequestBody Project project) {
-        Optional<Project> p = projectDao.findById(id);
+        Optional<Project> p = projectRepo.findById(id);
         if (!p.isPresent()){
             return new ResponseEntity<>(project, HttpStatus.BAD_REQUEST);
         } else {
             Project savedProject = p.get();
             savedProject.setNamaProject(project.getNamaProject());
 
-            Project update = projectDao.save(savedProject);
+            Project update = projectRepo.save(savedProject);
             return new ResponseEntity<>(update, HttpStatus.OK);
         }
     }
 
     @DeleteMapping(value = "/delete/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> deleteNotulen(@PathVariable("id") String id){
-        Optional<Project> p = projectDao.findById(id);
+        Optional<Project> p = projectRepo.findById(id);
         if (p == null){
             return new ResponseEntity("User not found", HttpStatus.NOT_FOUND);
         }
-        projectDao.delete(p.get());
+        projectRepo.delete(p.get());
         return ResponseEntity.ok().build();
     }
 

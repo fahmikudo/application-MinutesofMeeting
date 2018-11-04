@@ -1,11 +1,11 @@
-package id.web.fahmikudo.meeting.mom.dao;
+package id.web.fahmikudo.meeting.mom.repository;
 
 import id.web.fahmikudo.meeting.mom.model.DetailPokokBahasan;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
 import java.util.Optional;
 
-public interface DetailPokokBahasanDao extends PagingAndSortingRepository<DetailPokokBahasan, String> {
+public interface DetailPokokBahasanRepo extends PagingAndSortingRepository<DetailPokokBahasan, String> {
 
     Optional<DetailPokokBahasan> findById(String id);
 
