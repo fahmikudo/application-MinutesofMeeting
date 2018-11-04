@@ -1,6 +1,6 @@
 package id.web.fahmikudo.meeting.mom.controller;
 
-import id.web.fahmikudo.meeting.mom.dao.NotulenDao;
+import id.web.fahmikudo.meeting.mom.dao.UserDao;
 import id.web.fahmikudo.meeting.mom.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -23,32 +23,32 @@ import static org.springframework.web.util.UriComponentsBuilder.fromUriString;
 
 @RestController
 @RequestMapping("/api/notulen")
-public class NotulenController {
+public class UserController {
 
     private static final int MAX_PAGE_SIZE = 50;
 
     @Autowired
-    private NotulenDao notulenDao;
+    private UserDao userDao;
 
     @PostMapping(value = "/add", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> addNotulen(@Valid @RequestBody User user){
-        if (notulenDao.findByNama(user.getNama()).isPresent() && notulenDao.findByUsername(user.getUsername()).isPresent()){
+    public ResponseEntity<?> addUser(@Valid @RequestBody User user){
+        if (userDao.findByNamaLengkap(user.getNamaLengkap()).isPresent() && userDao.findByUsername(user.getUsername()).isPresent()){
             return new ResponseEntity<>(user, HttpStatus.BAD_REQUEST);
         } else {
-            notulenDao.save(user);
+            userDao.save(user);
             return new ResponseEntity<>(user, HttpStatus.CREATED);
         }
     }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> getNotulen(@PathVariable("id") String id) {
-        return notulenDao.findById(id)
-                .map(notulen -> new ResponseEntity<>(notulen, HttpStatus.OK))
+    public ResponseEntity<?> getUser(@PathVariable("id") String id) {
+        return userDao.findById(id)
+                .map(user -> new ResponseEntity<>(user, HttpStatus.OK))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<User>> getAllNotulen(@PageableDefault(size = MAX_PAGE_SIZE) Pageable pageable,
+    public ResponseEntity<List<User>> getAllUser(@PageableDefault(size = MAX_PAGE_SIZE) Pageable pageable,
                                                     @RequestParam(required = false, defaultValue = "id") String sort,
                                                     @RequestParam(required = false, defaultValue = "asc") String order){
         final PageRequest pr = PageRequest.of(
@@ -56,7 +56,7 @@ public class NotulenController {
                 Sort.by("asc" .equals(order) ? Sort.Direction.ASC : Sort.Direction.DESC, sort)
         );
 
-        Page<User> notulenPage = notulenDao.findAll(pr);
+        Page<User> notulenPage = userDao.findAll(pr);
 
         if (notulenPage.getContent().isEmpty()) {
             return new ResponseEntity(HttpStatus.NO_CONTENT);
@@ -87,30 +87,30 @@ public class NotulenController {
     }
 
     @PutMapping(value = "/edit/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> editNotulen(@PathVariable("id") String id, @Valid @RequestBody User user) {
-        Optional<User> n = notulenDao.findById(id);
+    public ResponseEntity<?> editUser(@PathVariable("id") String id, @Valid @RequestBody User user) {
+        Optional<User> n = userDao.findById(id);
         if (!n.isPresent()){
             return new ResponseEntity<>(user, HttpStatus.BAD_REQUEST);
         } else {
             User savedUser = n.get();
-            savedUser.setNama(user.getNama());
+            savedUser.setNamaLengkap(user.getNamaLengkap());
             savedUser.setJabatan(user.getJabatan());
             savedUser.setNoHp(user.getNoHp());
             savedUser.setUsername(user.getUsername());
             savedUser.setPassword(user.getPassword());
 
-            User update = notulenDao.save(savedUser);
+            User update = userDao.save(savedUser);
             return new ResponseEntity<>(update, HttpStatus.OK);
         }
     }
 
     @DeleteMapping(value = "/delete/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> deleteNotulen(@PathVariable("id") String id){
-        Optional<User> n = notulenDao.findById(id);
+    public ResponseEntity<?> deleteUser(@PathVariable("id") String id){
+        Optional<User> n = userDao.findById(id);
         if (n == null){
             return new ResponseEntity("User not found", HttpStatus.NOT_FOUND);
         }
-        notulenDao.delete(n.get());
+        userDao.delete(n.get());
         return ResponseEntity.ok().build();
     }
 

@@ -39,7 +39,7 @@ public class Meeting implements Serializable {
     private Project project;
 
     @ManyToOne(optional = false, fetch = FetchType.EAGER)
-    @JoinColumn(name = "id_notulen", nullable = false)
+    @JoinColumn(name = "id_user", nullable = false)
     private User user;
 
     @OneToMany(mappedBy = "meeting", orphanRemoval = true, fetch = FetchType.LAZY)

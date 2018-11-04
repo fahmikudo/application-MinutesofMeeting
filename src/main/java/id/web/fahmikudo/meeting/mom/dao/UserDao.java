@@ -5,8 +5,8 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 
 import java.util.Optional;
 
-public interface NotulenDao extends PagingAndSortingRepository<User, String> {
+public interface UserDao extends PagingAndSortingRepository<User, String> {
     Optional<User> findById(String id);
-    Optional<User> findByNama(String nama);
+    Optional<User> findByNamaLengkap(String nama);
     Optional<User> findByUsername(String username);
 }

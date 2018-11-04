@@ -1,7 +1,7 @@
 package id.web.fahmikudo.meeting.mom.controller;
 
 import id.web.fahmikudo.meeting.mom.dao.MeetingDao;
-import id.web.fahmikudo.meeting.mom.dao.NotulenDao;
+import id.web.fahmikudo.meeting.mom.dao.UserDao;
 import id.web.fahmikudo.meeting.mom.dao.ProjectDao;
 import id.web.fahmikudo.meeting.mom.model.Meeting;
 import id.web.fahmikudo.meeting.mom.model.User;
@@ -39,7 +39,7 @@ public class MeetingController {
     private ProjectDao projectDao;
 
     @Autowired
-    private NotulenDao notulenDao;
+    private UserDao userDao;
 
 
     @GetMapping(value = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -53,7 +53,7 @@ public class MeetingController {
     public ResponseEntity<?> addMeeting(@Valid @RequestBody Meeting meeting){
 
         Optional<Project> p = projectDao.findById(meeting.getProject().getId());
-        Optional<User> n = notulenDao.findById(meeting.getUser().getId());
+        Optional<User> n = userDao.findById(meeting.getUser().getId());
 
         boolean valid = false;
         if (p.isPresent() && n.isPresent()){
