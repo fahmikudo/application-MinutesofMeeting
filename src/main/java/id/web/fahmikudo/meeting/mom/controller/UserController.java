@@ -33,7 +33,7 @@ public class UserController {
 
     @PostMapping(value = "/add", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> addUser(@Valid @RequestBody User user){
-        if (userRepo.findByNamaLengkap(user.getNamaLengkap()).isPresent() && userRepo.findByUsername(user.getUsername()).isPresent()){
+        if (userRepo.findByNamaLengkap(user.getNamaLengkap()).isPresent()){
             return new ResponseEntity<>(user, HttpStatus.BAD_REQUEST);
         } else {
             userRepo.save(user);
@@ -49,7 +49,6 @@ public class UserController {
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<List<User>> getAllUser(@PageableDefault(size = MAX_PAGE_SIZE) Pageable pageable,
                                                     @RequestParam(required = false, defaultValue = "id") String sort,
                                                     @RequestParam(required = false, defaultValue = "asc") String order){

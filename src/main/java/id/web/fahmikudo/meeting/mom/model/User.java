@@ -1,7 +1,6 @@
 package id.web.fahmikudo.meeting.mom.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import id.web.fahmikudo.meeting.mom.security.model.Role;
 import lombok.Data;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -11,6 +10,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -36,7 +36,7 @@ public class User implements Serializable {
 
     @NotEmpty
     @NotNull
-    @Size(min = 6, max = 20)
+    @Size(min = 6, max = 255)
     private String password;
 
     @Column(nullable = false)
@@ -46,14 +46,20 @@ public class User implements Serializable {
     @Column(nullable = false)
     private String jabatan;
 
+    @Column(nullable = false)
+    private Boolean enabled;
+
     @OneToMany(mappedBy = "users", orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonIgnore
     private List<Meeting> meeting;
 
-    @Enumerated(EnumType.STRING)
-    private Role roles;
-
-    private Boolean enabled;
+    @ManyToMany
+    @JoinTable(
+            name = "user_roles",
+            joinColumns = @JoinColumn(name = "id_user"),
+            inverseJoinColumns = @JoinColumn(name = "id_role")
+    )
+    private Set<Role> roles;
 
     public User() {
     }

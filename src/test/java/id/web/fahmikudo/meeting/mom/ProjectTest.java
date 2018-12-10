@@ -19,7 +19,7 @@ public class ProjectTest {
     @Test
     public void testInsert(){
         Project p = new Project();
-        p.setNamaProject("Otoritas Jasa keuangan");
+        p.setNamaProject("Idis");
 
         pd.save(p);
     }
