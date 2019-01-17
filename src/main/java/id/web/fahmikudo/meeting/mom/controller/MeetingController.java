@@ -30,8 +30,6 @@ import static org.springframework.web.util.UriComponentsBuilder.fromUriString;
 @RequestMapping("/api/meeting")
 public class MeetingController {
 
-    private static final int MAX_PAGE_SIZE = 50;
-
     @Autowired
     private MeetingRepo meetingRepo;
 
@@ -41,6 +39,10 @@ public class MeetingController {
     @Autowired
     private UserRepo userRepo;
 
+    @GetMapping(value = "/list", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Page<Meeting> getListMeetings(Pageable page){
+        return meetingRepo.findAll(page);
+    }
 
     @GetMapping(value = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getMeeting(@PathVariable String id){
@@ -100,52 +102,7 @@ public class MeetingController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<Meeting>> getAllMeeting(@PageableDefault(size = MAX_PAGE_SIZE) Pageable pageable,
-                                                       @RequestParam(required = false, defaultValue = "id") String sort,
-                                                       @RequestParam(required = false, defaultValue = "asc") String order){
-        final PageRequest pr = PageRequest.of(
-                pageable.getPageNumber(), pageable.getPageSize(),
-                Sort.by("asc" .equals(order) ? Sort.Direction.ASC : Sort.Direction.DESC, sort)
-        );
 
-        Page<Meeting> meetingPage = meetingRepo.findAll(pr);
-
-        if (meetingPage.getContent().isEmpty()) {
-            return new ResponseEntity(HttpStatus.NO_CONTENT);
-        } else {
-            long totalMeetings = meetingPage.getTotalElements();
-            int nbPageMeetings = meetingPage.getNumberOfElements();
-
-            HttpHeaders headers = new HttpHeaders();
-            headers.add("X-Total-Count", String.valueOf(totalMeetings));
-
-            if (nbPageMeetings < totalMeetings) {
-                headers.add("first", buildPageUri(PageRequest.of(0, meetingPage.getSize())));
-                headers.add("last", buildPageUri(PageRequest.of(meetingPage.getTotalPages() - 1, meetingPage.getSize())));
-
-                if (meetingPage.hasNext()) {
-                    headers.add("next", buildPageUri(meetingPage.nextPageable()));
-                }
-
-                if (meetingPage.hasPrevious()) {
-                    headers.add("prev", buildPageUri(meetingPage.previousPageable()));
-                }
-
-                return new ResponseEntity<>(meetingPage.getContent(), headers, HttpStatus.PARTIAL_CONTENT);
-            } else {
-                return new ResponseEntity(meetingPage.getContent(), headers, HttpStatus.OK);
-            }
-        }
-    }
-
-
-    private String buildPageUri(Pageable page) {
-        return fromUriString("/api/meeting")
-                .query("page={page}&size={size}")
-                .buildAndExpand(page.getPageNumber(), page.getPageSize())
-                .toUriString();
-    }
 
 
 

@@ -27,13 +27,17 @@ import static org.springframework.web.util.UriComponentsBuilder.fromUriString;
 @RequestMapping(value = "api/pokokbahasan")
 public class PokokBahasanController {
 
-    private static final int MAX_PAGE_SIZE = 50;
 
     @Autowired
     private PokokBahasanRepo pokokBahasanRepo;
 
     @Autowired
     private MeetingRepo meetingRepo;
+
+    @GetMapping(value = "/list", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Page<PokokBahasan> getListPokokBahasan(Pageable pageable){
+        return pokokBahasanRepo.findAll(pageable);
+    }
 
     @GetMapping(value = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getPokokBahasan(@PathVariable("id") String id){
@@ -86,52 +90,7 @@ public class PokokBahasanController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<PokokBahasan>> getAllPokokBahasan(@PageableDefault(size = MAX_PAGE_SIZE) Pageable pageable,
-                                                            @RequestParam(required = false, defaultValue = "id") String sort,
-                                                            @RequestParam(required = false, defaultValue = "asc") String order){
-        final PageRequest pr = PageRequest.of(
-                pageable.getPageNumber(), pageable.getPageSize(),
-                Sort.by("asc" .equals(order) ? Sort.Direction.ASC : Sort.Direction.DESC, sort)
-        );
 
-        Page<PokokBahasan> pbPage = pokokBahasanRepo.findAll(pr);
-
-        if (pbPage.getContent().isEmpty()) {
-            return new ResponseEntity(HttpStatus.NO_CONTENT);
-        } else {
-            long totalPokokBahasan = pbPage.getTotalElements();
-            int nbPagePokokBahasan = pbPage.getNumberOfElements();
-
-            HttpHeaders headers = new HttpHeaders();
-            headers.add("X-Total-Count", String.valueOf(totalPokokBahasan));
-
-            if (nbPagePokokBahasan < totalPokokBahasan) {
-                headers.add("first", buildPageUri(PageRequest.of(0, pbPage.getSize())));
-                headers.add("last", buildPageUri(PageRequest.of(pbPage.getTotalPages() - 1, pbPage.getSize())));
-
-                if (pbPage.hasNext()) {
-                    headers.add("next", buildPageUri(pbPage.nextPageable()));
-                }
-
-                if (pbPage.hasPrevious()) {
-                    headers.add("prev", buildPageUri(pbPage.previousPageable()));
-                }
-
-                return new ResponseEntity<>(pbPage.getContent(), headers, HttpStatus.PARTIAL_CONTENT);
-            } else {
-                return new ResponseEntity(pbPage.getContent(), headers, HttpStatus.OK);
-            }
-        }
-    }
-
-
-    private String buildPageUri(Pageable page) {
-        return fromUriString("/api/pokokbahasan")
-                .query("page={page}&size={size}")
-                .buildAndExpand(page.getPageNumber(), page.getPageSize())
-                .toUriString();
-    }
 
 
 }

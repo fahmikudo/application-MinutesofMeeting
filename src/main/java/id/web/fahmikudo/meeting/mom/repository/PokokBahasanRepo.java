@@ -7,5 +7,4 @@ import java.util.Optional;
 
 public interface PokokBahasanRepo extends PagingAndSortingRepository<PokokBahasan, String> {
     Optional<PokokBahasan> findById(String id);
-    Optional<PokokBahasan> findByPokokBahasan(String pokokBahasan);
 }

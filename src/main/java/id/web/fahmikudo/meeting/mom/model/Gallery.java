@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -20,12 +21,19 @@ public class Gallery implements Serializable {
     private String id;
 
     @Column(nullable = false)
-    private String gambar;
+    private String fileName;
+
+    @Column(nullable = false)
+    private String fileType;
+
+    @Column(nullable = false)
+    @Lob
+    private byte[] data;
 
     @ManyToOne(optional = false, fetch = FetchType.EAGER)
     @JoinColumn(name = "id_meeting", nullable = false)
     private Meeting meeting;
 
-    public Gallery() {
+    public Gallery(String fileName, String contentType, byte[] bytes) {
     }
 }

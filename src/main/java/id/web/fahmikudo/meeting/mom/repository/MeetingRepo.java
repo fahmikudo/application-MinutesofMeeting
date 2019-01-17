@@ -5,5 +5,5 @@ import id.web.fahmikudo.meeting.mom.model.Meeting;
 
 
 public interface MeetingRepo extends PagingAndSortingRepository<Meeting, String> {
-    Meeting getMeetingById(String id);
+
 }

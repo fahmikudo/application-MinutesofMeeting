@@ -26,13 +26,17 @@ import static org.springframework.web.util.UriComponentsBuilder.fromUriString;
 @RequestMapping(value = "api/detail")
 public class DetailPokokBahasanController {
 
-    private static final int MAX_PAGE_SIZE = 50;
 
     @Autowired
     private DetailPokokBahasanRepo detailPokokBahasanRepo;
 
     @Autowired
     private PokokBahasanRepo pokokBahasanRepo;
+
+    @GetMapping(value = "/list", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Page<DetailPokokBahasan> getListDetail(Pageable pageable){
+        return detailPokokBahasanRepo.findAll(pageable);
+    }
 
     @PostMapping(value = "/add", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> addDetail(@Valid @RequestBody DetailPokokBahasan detailPokokBahasan){
@@ -77,51 +81,6 @@ public class DetailPokokBahasanController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<DetailPokokBahasan>> getAllDeatil(@PageableDefault(size = MAX_PAGE_SIZE) Pageable pageable,
-                                                                  @RequestParam(required = false, defaultValue = "id") String sort,
-                                                                  @RequestParam(required = false, defaultValue = "asc") String order){
-        final PageRequest pr = PageRequest.of(
-                pageable.getPageNumber(), pageable.getPageSize(),
-                Sort.by("asc" .equals(order) ? Sort.Direction.ASC : Sort.Direction.DESC, sort)
-        );
-
-        Page<DetailPokokBahasan> detailPage = detailPokokBahasanRepo.findAll(pr);
-
-        if (detailPage.getContent().isEmpty()) {
-            return new ResponseEntity(HttpStatus.NO_CONTENT);
-        } else {
-            long totalDetails = detailPage.getTotalElements();
-            int nbPageDetails = detailPage.getNumberOfElements();
-
-            HttpHeaders headers = new HttpHeaders();
-            headers.add("X-Total-Count", String.valueOf(totalDetails));
-
-            if (nbPageDetails < totalDetails) {
-                headers.add("first", buildPageUri(PageRequest.of(0, detailPage.getSize())));
-                headers.add("last", buildPageUri(PageRequest.of(detailPage.getTotalPages() - 1, detailPage.getSize())));
-
-                if (detailPage.hasNext()) {
-                    headers.add("next", buildPageUri(detailPage.nextPageable()));
-                }
-
-                if (detailPage.hasPrevious()) {
-                    headers.add("prev", buildPageUri(detailPage.previousPageable()));
-                }
-
-                return new ResponseEntity<>(detailPage.getContent(), headers, HttpStatus.PARTIAL_CONTENT);
-            } else {
-                return new ResponseEntity(detailPage.getContent(), headers, HttpStatus.OK);
-            }
-        }
-    }
-
-    private String buildPageUri(Pageable page) {
-        return fromUriString("/api/detail")
-                .query("page={page}&size={size}")
-                .buildAndExpand(page.getPageNumber(), page.getPageSize())
-                .toUriString();
-    }
 
 
 }

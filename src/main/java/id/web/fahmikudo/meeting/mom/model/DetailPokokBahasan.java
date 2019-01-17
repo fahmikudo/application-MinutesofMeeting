@@ -1,5 +1,6 @@
 package id.web.fahmikudo.meeting.mom.model;
 
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
@@ -10,8 +11,7 @@ import java.io.Serializable;
 
 @Entity
 @Table(name = "detail_pokok_bahasan")
-@Getter
-@Setter
+@Data
 public class DetailPokokBahasan implements Serializable {
 
     @Id
@@ -27,7 +27,7 @@ public class DetailPokokBahasan implements Serializable {
     @Type(type = "text")
     private String detailPokokBahasan;
 
-    @ManyToOne(optional = false, fetch = FetchType.EAGER)
+    @ManyToOne(optional = false,  fetch = FetchType.EAGER)
     @JoinColumn(name = "id_pokok_bahasan", nullable = false)
     private PokokBahasan pokokBahasan;
 
